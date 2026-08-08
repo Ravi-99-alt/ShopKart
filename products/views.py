@@ -9,6 +9,15 @@ class ProductListCreateView(generics.ListCreateAPIView):
     queryset = Product.objects.select_related("category").all()
     serializer_class = ProductSerializer
 
+    filterset_fields = {
+        "category": ["exact"],
+        "price": ["exact", "gte", "lte"],
+        "discount_price": ["exact", "gte", "lte"],
+        "is_active": ["exact"],
+    }
+
+    search_fields = ["name", "description"]
+
     def get_permissions(self):
         if self.request.method == "POST":
             return [IsAdminUser()]
