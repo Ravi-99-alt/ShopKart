@@ -1,25 +1,33 @@
-# Virtual environment
-venv/
+# Backend
+backend/venv/
+backend/.venv/
+backend/__pycache__/
+backend/*/__pycache__/
+backend/*/*/__pycache__/
+backend/*.log
+backend/db.sqlite3
+backend/.env
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/*.local
+frontend/.env
+frontend/.env.*
+!frontend/.env.example
+
+# Root environments and IDE files
 .venv/
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Django
-db.sqlite3
-*.log
-media/
-staticfiles/
-
-# Environment variables
-.env
-
-# IDE
 .vscode/
 .idea/
+
+# Python cache
+__pycache__/
+*.py[cod]
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Backup
+backend_backup/
