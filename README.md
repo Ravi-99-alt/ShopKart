@@ -426,59 +426,7 @@ Coupon
 
 The relationships between these entities are handled using Django models and the Django ORM.
 
-## Screenshots
-
-Add screenshots of the actual application here.
-
-### Home Page
-
-```text
-Add screenshot here
-```
-
-### Product Listing
-
-```text
-Add screenshot here
-```
-
-### Product Details
-
-```text
-Add screenshot here
-```
-
-### Shopping Cart
-
-```text
-Add screenshot here
-```
-
-### Checkout
-
-```text
-Add screenshot here
-```
-
-### Orders
-
-```text
-Add screenshot here
-```
-
-### Wishlist
-
-```text
-Add screenshot here
-```
-
-### Admin Dashboard
-
-```text
-Add screenshot here
-```
-
-## Future Improvements
+Future Improvements
 
 Possible improvements for the project include:
 
