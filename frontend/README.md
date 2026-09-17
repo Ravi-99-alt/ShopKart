@@ -1,16 +1,33 @@
-# React + Vite
+# ShopKart Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+React + Vite frontend for the ShopKart Django REST API.
 
-Currently, two official plugins are available:
+## Run
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+```powershell
+cd E:\ShopKart\frontend
+npm install
+npm run dev
+```
 
-## React Compiler
+Open `http://localhost:5173`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Backend
 
-## Expanding the Oxlint configuration
+The frontend expects Django at `http://localhost:8000/api`.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Main pages
+
+- Home
+- Products
+- Product Details
+- Cart
+- Checkout
+- Orders
+- Wishlist
+- Login
+- Register
+- Admin Login
+- Admin Dashboard
+
+Admin access is verified by the backend admin summary endpoint. Customer accounts cannot use the admin dashboard.

@@ -1,170 +1,150 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context";
 
 function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
-
-  const [loading, setLoading] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  const handleChange = (event) => {
-    const { name, value } = event.target;
-
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
-    }));
-  };
+  const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    setError("");
-
-    if (!formData.username.trim() || !formData.password) {
-      setError("Please enter your username and password.");
-      return;
-    }
-
     try {
       setLoading(true);
+      setError("");
 
       const response = await api.post("/accounts/login/", {
-        username: formData.username.trim(),
-        password: formData.password,
+        username,
+        password,
       });
 
-      const { access, refresh } = response.data;
+      const data = response.data;
 
-      if (!access || !refresh) {
-        setError("Login response did not contain valid tokens.");
-        return;
+      localStorage.setItem("access_token", data.access);
+
+      if (data.refresh) {
+        localStorage.setItem("refresh_token", data.refresh);
       }
 
-      let userData = null;
+      login(data.user || { username });
 
-      try {
-        const profileResponse = await api.get("/accounts/profile/", {
-          headers: {
-            Authorization: `Bearer ${access}`,
-          },
-        });
-
-        userData = profileResponse.data;
-      } catch (profileError) {
-        console.warn("Profile could not be loaded:", profileError);
-      }
-
-      login(access, refresh, userData);
-
-      navigate("/");
+      navigate(data.user?.is_staff ? "/admin/dashboard" : "/products");
     } catch (err) {
-      console.error("Login Error:", err);
+      const data = err.response?.data;
 
-      if (err.response) {
-        if (err.response.status === 401) {
-          setError("Invalid username or password.");
-        } else if (err.response.data?.detail) {
-          setError(err.response.data.detail);
-        } else {
-          setError(`Login failed. Server error: ${err.response.status}`);
-        }
-      } else {
-        setError("Unable to connect to the Django backend.");
-      }
+      setError(
+        data?.detail ||
+        data?.non_field_errors?.[0] ||
+        "Invalid username or password."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="auth-page">
+    <main className="auth-page">
       <div className="auth-card">
+        <div className="auth-brand"></div>
 
-        <div className="auth-header">
-          <div className="auth-icon">🔐</div>
+        <span className="cart-label">SHOPKART</span>
 
-          <p className="auth-label">
-            SHOPKART ACCOUNT
-          </p>
+        <h1>Welcome Back</h1>
+        <p>Login to continue shopping.</p>
 
-          <h1>Welcome Back</h1>
-
-          <p>
-            Login to continue shopping with ShopKart.
-          </p>
-        </div>
-
-        {error && (
-          <div className="auth-error">
-            ⚠️ {error}
-          </div>
-        )}
+        {error && <div className="auth-error">Error: {error}</div>}
 
         <form onSubmit={handleSubmit} className="auth-form">
 
-          <div className="form-group">
-            <label htmlFor="username">
-              Username
-            </label>
-
+          <label>
+            Username
             <input
-              id="username"
-              name="username"
-              type="text"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Enter your username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
               autoComplete="username"
             />
-          </div>
+          </label>
 
-          <div className="form-group">
-            <label htmlFor="password">
-              Password
-            </label>
+          <label>
+            Password
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Enter your password"
-              autoComplete="current-password"
-            />
-          </div>
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="current-password"
+              />
+
+              <button
+                type="button"
+                className="password-eye"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? (
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M3 3l18 18" />
+                    <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8" />
+                    <path d="M9.9 4.2A10.7 10.7 0 0 1 12 4c5 0 8.5 4 9.5 6-.4.8-1.4 2.1-2.9 3.2" />
+                    <path d="M6.1 6.1C4.4 7.3 3.3 8.8 2.5 10c1 2 4.5 6 9.5 6 1 0 2-.2 2.9-.5" />
+                  </svg>
+                ) : (
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="20"
+                    height="20"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M2.5 12s3.5-7 9.5-7 9.5 7 9.5 7-3.5 7-9.5 7-9.5-7-9.5-7z" />
+                    <circle cx="12" cy="12" r="3" />
+                  </svg>
+                )}
+              </button>
+            </div>
+          </label>
 
           <button
-            type="submit"
-            className="primary-btn auth-submit-btn"
+            className="primary-btn auth-submit"
             disabled={loading}
           >
-            {loading ? "Signing In..." : "Sign In"}
+            {loading ? "Logging in..." : "Login"}
           </button>
 
         </form>
 
-        <div className="auth-footer">
-          <p>
-            Don't have an account?
-          </p>
+        <p className="auth-footer">
+          New to ShopKart?{" "}
+          <Link to="/register">Create an account</Link>
+        </p>
 
-          <Link to="/register">
-            Create an account
-          </Link>
-        </div>
-
+        <Link to="/admin/login" className="admin-login-link">
+          Admin Login
+        </Link>
       </div>
-    </div>
+    </main>
   );
 }
 

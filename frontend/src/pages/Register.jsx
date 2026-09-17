@@ -5,94 +5,59 @@ import api from "../services/api";
 function Register() {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
+  const [form, setForm] = useState({
     username: "",
     email: "",
     password: "",
     password2: "",
   });
 
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (event) => {
-    const { name, value } = event.target;
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    setFormData((previous) => ({
-      ...previous,
-      [name]: value,
+  const update = (field) => (event) =>
+    setForm((current) => ({
+      ...current,
+      [field]: event.target.value,
     }));
-  };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    setError("");
-    setSuccess("");
-
-    if (
-      !formData.username.trim() ||
-      !formData.email.trim() ||
-      !formData.password ||
-      !formData.password2
-    ) {
-      setError("Please fill in all fields.");
-      return;
-    }
-
-    if (formData.password !== formData.password2) {
+    if (form.password !== form.password2) {
       setError("Passwords do not match.");
       return;
     }
 
     try {
       setLoading(true);
+      setError("");
 
       await api.post("/accounts/register/", {
-        username: formData.username.trim(),
-        email: formData.email.trim(),
-        password: formData.password,
-        password2: formData.password2,
+        username: form.username,
+        email: form.email,
+        password: form.password,
+        password2: form.password2,
       });
 
-      setSuccess(
-        "Account created successfully! Redirecting to login..."
-      );
-
-      setFormData({
-        username: "",
-        email: "",
-        password: "",
-        password2: "",
-      });
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
+      navigate("/login");
     } catch (err) {
-      console.error("Registration Error:", err);
+      const data = err.response?.data;
 
-      if (err.response?.data) {
-        const data = err.response.data;
-
-        if (typeof data === "string") {
-          setError(data);
-        } else {
-          const messages = Object.entries(data)
-            .map(([field, value]) => {
-              const message = Array.isArray(value)
-                ? value.join(" ")
-                : String(value);
-
-              return `${field}: ${message}`;
-            })
-            .join(" ");
-
-          setError(messages || "Registration failed.");
-        }
+      if (typeof data === "object" && data !== null) {
+        setError(
+          Object.entries(data)
+            .map(
+              ([key, value]) =>
+                `${key}: ${Array.isArray(value) ? value.join(" ") : value}`
+            )
+            .join(" ")
+        );
       } else {
-        setError("Unable to connect to the Django backend.");
+        setError("Unable to create your account.");
       }
     } finally {
       setLoading(false);
@@ -100,126 +65,100 @@ function Register() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-card">
+    <main className="auth-page">
+      <div className="auth-card wide">
+        <div className="auth-brand"></div>
 
-        <div className="auth-header">
-          <div className="auth-icon">🛍️</div>
+        <span className="cart-label">SHOPKART</span>
 
-          <p className="auth-label">
-            SHOPKART ACCOUNT
-          </p>
+        <h1>Create Account</h1>
+        <p>Join ShopKart and start shopping.</p>
 
-          <h1>Create Account</h1>
+        {error && <div className="auth-error">Error: {error}</div>}
 
-          <p>
-            Join ShopKart and start shopping today.
-          </p>
-        </div>
+        <form onSubmit={handleSubmit} className="auth-form">
 
-        {error && (
-          <div className="auth-error">
-            ⚠️ {error}
-          </div>
-        )}
-
-        {success && (
-          <div className="auth-success">
-            ✅ {success}
-          </div>
-        )}
-
-        <form
-          onSubmit={handleSubmit}
-          className="auth-form"
-        >
-
-          <div className="form-group">
-            <label htmlFor="username">
-              Username
-            </label>
-
+          <label>
+            Username
             <input
-              id="username"
-              name="username"
               type="text"
-              value={formData.username}
-              onChange={handleChange}
-              placeholder="Choose a username"
-              autoComplete="username"
+              value={form.username}
+              onChange={update("username")}
+              required
             />
-          </div>
+          </label>
 
-          <div className="form-group">
-            <label htmlFor="email">
-              Email Address
-            </label>
-
+          <label>
+            Email
             <input
-              id="email"
-              name="email"
               type="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter your email"
-              autoComplete="email"
+              value={form.email}
+              onChange={update("email")}
+              required
             />
-          </div>
+          </label>
 
-          <div className="form-group">
-            <label htmlFor="password">
-              Password
-            </label>
+          <label>
+            Password
+            <div className="password-input-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                value={form.password}
+                onChange={update("password")}
+                required
+              />
 
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              placeholder="Create a password"
-              autoComplete="new-password"
-            />
-          </div>
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((current) => !current)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </label>
 
-          <div className="form-group">
-            <label htmlFor="password2">
-              Confirm Password
-            </label>
+          <label>
+            Confirm Password
+            <div className="password-input-wrapper">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                value={form.password2}
+                onChange={update("password2")}
+                required
+              />
 
-            <input
-              id="password2"
-              name="password2"
-              type="password"
-              value={formData.password2}
-              onChange={handleChange}
-              placeholder="Confirm your password"
-              autoComplete="new-password"
-            />
-          </div>
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() =>
+                  setShowConfirmPassword((current) => !current)
+                }
+                aria-label={
+                  showConfirmPassword
+                    ? "Hide confirm password"
+                    : "Show confirm password"
+                }
+              >
+                {showConfirmPassword ? "Hide" : "Show"}
+              </button>
+            </div>
+          </label>
 
           <button
-            type="submit"
-            className="primary-btn auth-submit-btn"
+            className="primary-btn auth-submit"
             disabled={loading}
           >
-            {loading ? "Creating Account..." : "Create Account"}
+            {loading ? "Creating..." : "Create Account"}
           </button>
-
         </form>
 
-        <div className="auth-footer">
-          <p>
-            Already have an account?
-          </p>
-
-          <Link to="/login">
-            Sign In
-          </Link>
-        </div>
-
+        <p className="auth-footer">
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
       </div>
-    </div>
+    </main>
   );
 }
 

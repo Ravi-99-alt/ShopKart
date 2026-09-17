@@ -1,152 +1,43 @@
 import { Link } from "react-router-dom";
 
+const categories = [
+  { title: "Electronics", text: "Mobiles, laptops, audio and accessories", className: "cat-electronics" },
+  { title: "Fashion", text: "Clothing, footwear and everyday styles", className: "cat-fashion" },
+  { title: "Home", text: "Kitchen, home essentials and more", className: "cat-home" },
+  { title: "Accessories", text: "Useful products for work and travel", className: "cat-accessories" },
+];
+
 function Home() {
   return (
-    <div className="home-page">
-
-      {/* Hero Section */}
-      <section className="hero-section">
-        <div className="hero-content">
-          <span className="hero-badge">
-            WELCOME TO SHOPKART
-          </span>
-
-          <h1>
-            Shop Smart.
-            <br />
-            Live Better.
-          </h1>
-
-          <p>
-            Discover quality products at great prices and enjoy a
-            simple, secure shopping experience.
-          </p>
-
-          <div className="hero-buttons">
-            <Link to="/products" className="primary-btn">
-              Shop Now
-            </Link>
-
-            <Link to="/products" className="secondary-btn">
-              Explore Products
-            </Link>
+    <main className="home-page">
+      <section className="market-hero">
+        <div className="hero-inner">
+          <div className="hero-copy">
+            <p className="eyebrow">SHOPKART MARKETPLACE</p>
+            <h1>Everything you need, in one place.</h1>
+            <p className="hero-text">Browse products, compare prices, save favorites and place your order in a few simple steps.</p>
+            <div className="hero-actions"><Link to="/products" className="primary-btn">Shop Now</Link><Link to="/products" className="secondary-btn">View All Products</Link></div>
+            <div className="hero-points"><span>Secure checkout</span><span>Fast delivery</span><span>Easy returns</span></div>
+          </div>
+          <div className="hero-panel">
+            <div className="hero-panel-top">Featured shopping</div>
+            <div className="hero-product-lines"><span>Electronics</span><strong>Latest tech</strong></div>
+            <div className="hero-product-lines"><span>Fashion</span><strong>Everyday styles</strong></div>
+            <div className="hero-product-lines"><span>Home</span><strong>Daily essentials</strong></div>
+            <Link to="/products" className="hero-panel-link">Explore the store</Link>
           </div>
         </div>
-
-        <div className="hero-card">
-          <div className="hero-icon">🛍️</div>
-
-          <h2>Everything You Need</h2>
-
-          <p>
-            Electronics, fashion, home essentials and more.
-          </p>
-        </div>
       </section>
 
-      {/* Features */}
-      <section className="features-section">
+      <section className="service-strip"><div className="content-width service-grid"><div><strong>Free delivery</strong><span>On eligible orders</span></div><div><strong>Secure payments</strong><span>Protected checkout</span></div><div><strong>Easy shopping</strong><span>Simple order tracking</span></div><div><strong>Customer support</strong><span>Help when you need it</span></div></div></section>
 
-        <div className="feature-card">
-          <div className="feature-icon">🚚</div>
-          <h3>Fast Delivery</h3>
-          <p>
-            Get your orders delivered quickly and safely.
-          </p>
-        </div>
-
-        <div className="feature-card">
-          <div className="feature-icon">🔒</div>
-          <h3>Secure Shopping</h3>
-          <p>
-            Your account and shopping experience stay protected.
-          </p>
-        </div>
-
-        <div className="feature-card">
-          <div className="feature-icon">💳</div>
-          <h3>Easy Payments</h3>
-          <p>
-            Choose from multiple convenient payment methods.
-          </p>
-        </div>
-
-        <div className="feature-card">
-          <div className="feature-icon">⭐</div>
-          <h3>Trusted Products</h3>
-          <p>
-            Find products and share your shopping experience.
-          </p>
-        </div>
-
+      <section className="home-section content-width">
+        <div className="section-title-row"><div><p className="eyebrow">SHOP BY CATEGORY</p><h2>Explore categories</h2></div><Link to="/products" className="section-link">See all products</Link></div>
+        <div className="category-grid">{categories.map((category) => <Link to="/products" className={`market-category ${category.className}`} key={category.title}><div><h3>{category.title}</h3><p>{category.text}</p></div><span>View products</span></Link>)}</div>
       </section>
 
-      {/* Categories */}
-      <section className="home-section">
-
-        <div className="section-heading">
-          <span>EXPLORE</span>
-
-          <h2>Shop by Category</h2>
-
-          <p>
-            Find exactly what you're looking for.
-          </p>
-        </div>
-
-        <div className="category-grid">
-
-          <Link to="/products" className="category-card">
-            <div className="category-icon">💻</div>
-            <h3>Electronics</h3>
-            <p>Phones, laptops and gadgets</p>
-          </Link>
-
-          <Link to="/products" className="category-card">
-            <div className="category-icon">👕</div>
-            <h3>Fashion</h3>
-            <p>Style for every occasion</p>
-          </Link>
-
-          <Link to="/products" className="category-card">
-            <div className="category-icon">🏠</div>
-            <h3>Home</h3>
-            <p>Everything for your home</p>
-          </Link>
-
-          <Link to="/products" className="category-card">
-            <div className="category-icon">🎧</div>
-            <h3>Accessories</h3>
-            <p>Complete your everyday setup</p>
-          </Link>
-
-        </div>
-
-      </section>
-
-      {/* Call To Action */}
-      <section className="cta-section">
-
-        <div>
-          <span>READY TO SHOP?</span>
-
-          <h2>
-            Find something you'll love.
-          </h2>
-
-          <p>
-            Browse our collection and start shopping today.
-          </p>
-        </div>
-
-        <Link to="/products" className="primary-btn">
-          Browse Products
-        </Link>
-
-      </section>
-
-    </div>
+      <section className="deal-banner content-width"><div><p className="eyebrow">SHOPKART DEALS</p><h2>Great products. Clear prices. Simple shopping.</h2><p>Find current products and offers in the ShopKart catalog.</p></div><Link to="/products" className="primary-btn">Browse Deals</Link></section>
+    </main>
   );
 }
-
 export default Home;
