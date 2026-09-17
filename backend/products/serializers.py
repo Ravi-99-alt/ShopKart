@@ -1,3 +1,4 @@
+from django.core.validators import URLValidator
 from rest_framework import serializers
 
 from .models import Product
@@ -14,6 +15,7 @@ class ProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
+
         fields = [
             "id",
             "category",
@@ -41,12 +43,23 @@ class ProductSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
 
+    def validate_image(self, value):
+        if value:
+            validator = URLValidator()
+
+            try:
+                validator(value)
+            except Exception:
+                raise serializers.ValidationError(
+                    "Please enter a valid image URL."
+                )
+
+        return value
+
     def validate(self, attrs):
         price = attrs.get("price")
         discount_price = attrs.get("discount_price")
 
-        # During PATCH, use the existing price
-        # if price was not provided.
         if self.instance:
             if price is None:
                 price = self.instance.price
@@ -54,7 +67,6 @@ class ProductSerializer(serializers.ModelSerializer):
             if "discount_price" not in attrs:
                 discount_price = self.instance.discount_price
 
-        # Discount price cannot be greater than original price.
         if (
             price is not None
             and discount_price is not None
@@ -72,15 +84,13 @@ class ProductSerializer(serializers.ModelSerializer):
         return attrs
 
     def get_average_rating(self, obj):
+        from django.db.models import Avg
         from reviews.models import Review
 
         result = Review.objects.filter(
             product=obj
         ).aggregate(
-            average=__import__(
-                "django.db.models",
-                fromlist=["Avg"]
-            ).Avg("rating")
+            average=Avg("rating")
         )
 
         average = result["average"]

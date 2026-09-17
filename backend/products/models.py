@@ -20,7 +20,9 @@ class Product(models.Model):
         unique=True,
     )
 
-    description = models.TextField()
+    description = models.TextField(
+        blank=True,
+    )
 
     price = models.DecimalField(
         max_digits=10,
@@ -40,8 +42,8 @@ class Product(models.Model):
         default=0,
     )
 
-    image = models.ImageField(
-        upload_to="products/",
+    image = models.URLField(
+        max_length=1000,
         blank=True,
         null=True,
     )
